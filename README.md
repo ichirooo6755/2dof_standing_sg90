@@ -66,6 +66,13 @@ python export_policy_header.py robo1_getup_ppo.zip -o ../firmware/xiao_getup/pol
 
 同じチェックポイントから既定の学習率で PPO を続けると、立っていられる姿勢が減りました。同梱しているのは、4姿勢とも立った behavior cloning の方策です。
 
+前後左右の歩行は `train_walk.py` です。指令は足の座標系で、前が +X、左が +Y です。上段サーボは X-Z 面、下段サーボは Y-Z 面を振ります。`robo1_walk_ppo.zip` は、MuJoCo 上で進んだ周期運動を方策に写したものです。8 秒の評価で、前へ約 27 cm、後ろへ約 12 cm、左へ約 14 cm、右へ約 17 cm 動きます。同じ報酬で PPO を続けると距離が落ちたので、その更新は残していません。
+
+```
+python train_walk.py --timesteps 300000
+python -c "from train_walk import evaluate; from stable_baselines3 import PPO; print(evaluate(PPO.load('robo1_walk_ppo.zip')))"
+```
+
 ## テスト
 
 ```

@@ -1,6 +1,8 @@
-# SelfRisingRobot SG90 / XIAO nRF54L15 Sense STL
+# SelfRisingRobot SG90 / XIAO nRF54L15 Sense
 
-[SelfRisingRobot](https://github.com/homemadegarbage/SelfRisingRobot) の公開STLを、TowerPro SG90 2個と Seeed Studio XIAO nRF54L15 Sense 向けにしたものです。3Dプリント用STLだけを含み、制御コードや回路は含みません。
+[SelfRisingRobot](https://github.com/homemadegarbage/SelfRisingRobot) を、TowerPro SG90 2個と Seeed Studio XIAO nRF54L15 Sense で起き上がらせるためのSTL、MuJoCo学習、ファームウェアです。
+
+XIAO nRF54L15 Sense の LSM6DS3TR-C で姿勢を見ます。ロールまたはピッチが 0.75 rad（約43°）を 300 ms 超えると転倒と判定し、学習した方策で起き上がります。直立（0.25 rad 以内）を 700 ms 維持すると止まります。
 
 ## 印刷
 
@@ -11,35 +13,61 @@
 | `stl/arm2.stl` | 1 | 上段アーム。公開STL `arm2P.stl` と同一 |
 | `stl/horn_adapter_sg90.stl` | 2 | SG90付属ホーンと各アームを締結 |
 
-単位はmmです。`horn_adapter_sg90.stl` は2個印刷します。
+単位は mm です。
 
-## 形状
+サーボ受けは高さ 24.0 mm、幅 12.5 mm で背面が開いています。SG90 の本体断面 22.7 × 12.2 mm が入り、取付穴間隔 27.8 mm と関節位置は公開モデルのままです。XIAO の枠は内寸 21.6 × 18.4 mm、高さ 1.5 mm で、USB-C を足の縁へ向けます。基板は薄い両面テープで固定します。ホーンアダプターは厚さ 5 mm で、アーム側の2穴（間隔 6.5 mm、軸から 18.6 mm）と、軸から 8〜14 mm の幅 1.6 mm の長穴を持っています。
 
-公開モデルのサーボ受けは、高さ24.0mm、幅12.5mmで、背面は開いています。SG90の本体断面は公称22.7 × 12.2mmなので、この受けに入ります。取付穴の間隔27.8mmと関節の位置は変えていません。SG90は軸方向の全長が約30mmあり、開いた背面側へ出ます。
+## 配線
 
-足のM5Atom用の壁は撤去しました。代わりに、基板外形21.0 × 17.8mmに対して内寸21.6 × 18.4mm、高さ1.5mmの三方枠があります。USB-Cは足の縁側です。基板は薄い両面テープで固定します。
+Arduino コアは [lolren/nrf54-arduino-core](https://github.com/lolren/nrf54-arduino-core) です。ボードマネージャに次を追加し、`XIAO nRF54L15 / Sense` を選び、`firmware/xiao_getup/xiao_getup.ino` を書き込みます。
 
-ホーンアダプターは元の外形と、アームへ締結する2穴（間隔6.5mm、軸から18.6mm）を維持しています。軸ねじ用の穴は直径2.4mmです。軸から8〜14mmの幅1.6mmの長穴が、SG90付属ホーンの2mmピッチ穴に重なります。
+```
+https://raw.githubusercontent.com/lolren/nrf54-arduino-core/main/package_nrf54l15clean_index.json
+```
 
-## 組立
+| 接続 | ピン |
+| --- | --- |
+| 下段サーボ（足側）の信号 | D0 |
+| 上段サーボの信号 | D1 |
+| サーボ電源 | 5V |
+| サーボと基板のグランド | GND |
 
-1. 下段SG90を足へ、上段SG90を中間アームへ、付属ねじで固定する。
-2. 各SG90のホーンを中央付近に組み、ホーンアダプターを挟んで付属ねじより長い同径ねじで固定する。アダプターは厚さ5mmです。
-3. アダプターの2穴を、中間アームまたは上段アームの2穴へねじ止めする。
-4. XIAO nRF54L15 Senseを枠へ置き、USB-Cを足の縁へ向ける。
+サーボを 3V3 から給電しないでください。5V ピンは USB 給電で約 4.7 V、電池ではセル電圧です。サーボ2個が同時に止まると基板がリセットすることがあるので、その場合はサーボ用の 5 V を別に用意し、グランドだけ共通にします。SG90 の公称電圧は 4.8〜6 V です。
 
-元の関節位置は維持しています。実機のSG90、とくに互換品は耳の間隔とホーン穴の位置に差があるため、各部品を1個ずつ試し刷りしてから残りを印刷してください。
+基板上のボタンで起き上がりを開始します。動作中にもう一度押すと停止し、自動再開も切ります。シリアルは 115200 bps で、`GETUP` / `MANUAL`、`fallen` / `upright`、roll、pitch、サーボ目標を出します。平らな台で `upright` かつ roll と pitch がほぼ 0 にならない場合は、`xiao_getup.ino` の `kAxisSign` を変えます。平坦時にチップの +Z が上、+X が USB 方向という実装時の仮定です。実機では未測定です。
 
-## 現状
+サーボの中央は 1500 µs です。`kServoTrimUs` で個体差を吸収します。
 
-- 4ファイルとも閉じたメッシュで、面の向きを確認済み
-- `arm1.stl` と `arm2.stl` は公開ファイルの複製
-- SG90とXIAOの公称寸法に合わせた形状で、実物への組付と動作は未確認
+## 学習
+
+`sim/` で実行します。モデルは公開版を、SG90 のストールトルク 0.16 N·m、サーボ 9 g、XIAO 3 g に変えたものです。
+
+```
+pip install -r requirements.txt
+python pretrain_robo1_from_scripted.py
+python eval_robo1_policy.py
+python export_policy_header.py robo1_getup_ppo.zip -o ../firmware/xiao_getup/policy_network.h
+```
+
+`pretrain_robo1_from_scripted.py` は、4つの倒れ姿勢の教師軌道から方策を学習します。ロール正方向の軌道は、軽い機体でも最後まで立っていられるものを探索して `getup_reference.py` に入れています。同梱の `robo1_getup_ppo.zip` は、その学習結果です。
+
+評価では `roll_pos`、`roll_neg`、`pitch_pos`、`pitch_neg` のすべてで、直立かつサーボが中央付近の状態を 50 ステップ維持しました。この判定は `success_count >= 50` です。
+
+同じチェックポイントから既定の学習率で PPO を続けると、立っていられる姿勢が減りました。同梱しているのは、4姿勢とも立った behavior cloning の方策です。
+
+## テスト
+
+```
+gcc -Wall -Wextra -O2 -o /tmp/test_getup firmware/test_getup.c -lm && /tmp/test_getup
+gcc -Wall -Wextra -O2 -o /tmp/test_policy firmware/test_policy.c -lm && /tmp/test_policy
+```
+
+転倒判定、復帰、サーボ中央パルス、そして方策の C 実装が Python の出力と一致することを確認しています。MuJoCo 上の起き上がりは `sim/eval_robo1_policy.py` で確認しています。実機への書き込みと転倒からの起き上がりは未確認です。
 
 ## 出典
 
 - 元モデル: `homemadegarbage/SelfRisingRobot` commit `c344c2a4a1a51562247528d8aadcc0a527b6b103`
-- SG90: TowerPro公称寸法（本体22.7 × 12.2mm、耳を含む全長32.3mm、軸方向約30.3mm）
-- XIAO nRF54L15 Sense: Seeed Studio公称基板外形 21.0 × 17.8mm
+- SG90: TowerPro 公称寸法
+- XIAO nRF54L15 Sense: Seeed Studio 公称基板外形 21.0 × 17.8 mm、IMU は LSM6DS3TR-C
 
 元リポジトリにはライセンス表記がありません。再配布や商用利用の前に、権利者へ条件を確認してください。

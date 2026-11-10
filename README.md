@@ -26,6 +26,8 @@ Fusion で開くときは `step/` のファイルを使ってください。STL 
 
 サーボ受けは高さ 24.0 mm、幅 12.5 mm で背面が開いています。SG90 の本体断面 22.7 × 12.2 mm が入り、取付穴間隔 27.8 mm と関節位置は公開モデルのままです。XIAO の枠は内寸 21.6 × 18.4 mm、高さ 1.5 mm で、USB-C を足の縁へ向けます。基板は薄い両面テープで固定します。ホーンアダプターは厚さ 2.5 mm、幅 10.5 mm です。サーボ軸側の面は元の位置のまま、反対側の端を 1 mm 短くしています。アーム側の2穴（間隔 6.5 mm、軸から 18.6 mm）と、軸から 8〜14 mm の幅 1.6 mm の長穴はそのままです。
 
+薄くする前の厚さ 5 mm、幅 12.5 mm は `step/horn_adapter_sg90_5mm.step` です。
+
 ## 配線
 
 Arduino コアは [lolren/nrf54-arduino-core](https://github.com/lolren/nrf54-arduino-core) です。ボードマネージャに次を追加し、`XIAO nRF54L15 / Sense` を選び、`firmware/xiao_getup/xiao_getup.ino` を書き込みます。

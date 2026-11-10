@@ -1,7 +1,11 @@
-"""Commanded walking for the two-servo robot.
+"""Direction-commanded motion for the two-servo self-righting robot.
 
-Forward/back is the foot's +X/-X, left/right is +Y/-Y, both in the yaw frame
-of the foot. Servo 2 swings the arm in the X-Z plane, servo 1 in the Y-Z plane.
+The servos are not parallel: servo 1 turns about the foot X axis and servo 2
+about the foot Y axis. Commands are in that body frame, not the world frame,
+because the IMU has no magnetometer.
+
+Movement may stay upright or tip over and stand back up. The actor never sees
+the true velocity. That is appended for the critic only.
 """
 
 import math
@@ -12,6 +16,8 @@ import mujoco
 import numpy as np
 from gymnasium import spaces
 
+from robo1_env import FALLEN_POSES, roll_pitch_to_quat
+
 
 COMMANDS = {
     "forward": np.array([1.0, 0.0], dtype=np.float64),
@@ -20,16 +26,22 @@ COMMANDS = {
     "right": np.array([0.0, -1.0], dtype=np.float64),
 }
 COMMAND_NAMES = tuple(COMMANDS)
+ACTOR_DIM = 12  # gravity, gyro, previous action, commanded angles, command
+TARGET_SPEED = 0.06  # m/s along the command
 
 
-def quat_to_roll_pitch(q):
-    w, x, y, z = q
-    sinr_cosp = 2.0 * (w * x + y * z)
-    cosr_cosp = 1.0 - 2.0 * (x * x + y * y)
-    roll = math.atan2(sinr_cosp, cosr_cosp)
-    sinp = max(-1.0, min(1.0, 2.0 * (w * y - z * x)))
-    pitch = math.asin(sinp)
-    return roll, pitch
+def quat_mul(a, b):
+    aw, ax, ay, az = a
+    bw, bx, by, bz = b
+    return np.array(
+        [
+            aw * bw - ax * bx - ay * by - az * bz,
+            aw * bx + ax * bw + ay * bz - az * by,
+            aw * by - ax * bz + ay * bw + az * bx,
+            aw * bz + ax * by - ay * bx + az * bw,
+        ],
+        dtype=np.float64,
+    )
 
 
 class WalkEnv(gym.Env):
@@ -39,74 +51,111 @@ class WalkEnv(gym.Env):
         super().__init__()
         self.model = mujoco.MjModel.from_xml_path(str(Path(xml_path)))
         self.data = mujoco.MjData(self.model)
-        self.model.geom_friction[:, 0] = 1.4
+        self.nominal_mass = self.model.body_mass.copy()
+        self.nominal_inertia = self.model.body_inertia.copy()
+        self.nominal_gain = self.model.actuator_gainprm[:, 0].copy()
+        self.nominal_bias = self.model.actuator_biasprm[:, 1].copy()
 
         self.frame_skip = 20
         self.max_steps = 400
         self.target_delta = 0.08
         self.target_limit = 1.55
-        self.settle_steps = 150
+        self.settle_steps = 160
 
         self.foot_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "foot")
         s1 = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, "servo1_joint")
         s2 = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, "servo2_joint")
         self.s1_q = self.model.jnt_qposadr[s1]
         self.s2_q = self.model.jnt_qposadr[s2]
-        self.s1_v = self.model.jnt_dofadr[s1]
-        self.s2_v = self.model.jnt_dofadr[s2]
 
         self.action_space = spaces.Box(-1.0, 1.0, shape=(2,), dtype=np.float32)
-        high = np.array(
-            [math.pi, math.pi, 5, 5, 2, 2, 20, 20, 1, 1],
-            dtype=np.float32,
-        )
+        high = np.ones(ACTOR_DIM + 3, dtype=np.float32) * 8.0
         self.observation_space = spaces.Box(-high, high, dtype=np.float32)
 
         self.target = np.zeros(2, dtype=np.float64)
+        self.prev_action = np.zeros(2, dtype=np.float64)
         self.command = COMMANDS["forward"].copy()
         self.command_name = "forward"
         self.step_count = 0
         self.start_pos = np.zeros(3)
         self.start_rot = np.eye(3)
+        self.queue = []
+        self.upright = 1.0
+        self.grav_noise = 0.0
+        self.gyro_noise = 0.0
 
     def _rotation(self):
         return self.data.xmat[self.foot_id].reshape(3, 3).copy()
 
-    def _body_horizontal_velocity(self):
+    def _body_velocity(self):
+        velocity = self._rotation().T @ self.data.qvel[:3]
+        return velocity.astype(np.float64)
+
+    def _gravity_gyro(self):
         rotation = self._rotation()
-        velocity = rotation.T @ self.data.qvel[:3]
-        return float(velocity[0]), float(velocity[1]), float(self.data.qvel[2])
+        gravity = rotation.T @ np.array([0.0, 0.0, -1.0])
+        gyro = self.data.qvel[3:6].copy()
+        return gravity, gyro
 
     def _obs(self):
-        roll, pitch = quat_to_roll_pitch(self.data.qpos[3:7])
-        vx, vy, _ = self._body_horizontal_velocity()
-        return np.array(
-            [
-                roll,
-                pitch,
-                vx,
-                vy,
-                self.data.qpos[self.s1_q],
-                self.data.qpos[self.s2_q],
-                self.data.qvel[self.s1_v],
-                self.data.qvel[self.s2_v],
-                self.command[0],
-                self.command[1],
-            ],
-            dtype=np.float32,
+        gravity, gyro = self._gravity_gyro()
+        if self.grav_noise:
+            gravity = gravity + self.np_random.normal(0.0, self.grav_noise, size=3)
+        if self.gyro_noise:
+            gyro = gyro + self.np_random.normal(0.0, self.gyro_noise, size=3)
+        velocity = self._body_velocity()
+        actor = np.concatenate(
+            [gravity, gyro, self.prev_action, self.target, self.command]
         )
+        return np.concatenate([actor, velocity]).astype(np.float32)
 
-    def reward(self, action, vx, vy, vz, roll, pitch):
+    def reward(self, action, velocity, upright, prev_upright):
+        vx, vy, vz = velocity
         progress = vx * self.command[0] + vy * self.command[1]
         lateral = -vx * self.command[1] + vy * self.command[0]
-        # Leaning and hopping are the gait. Penalizing tilt made the policy
-        # stand still, which never reaches the commanded direction.
-        return float(
-            8.0 * progress
-            - 2.0 * lateral * lateral
-            - 0.002 * float(np.dot(action, action))
-            - 0.02 * abs(vz)
-        )
+        # Stopped motion scores zero. Going the commanded way scores up to the
+        # target speed, and going past it stops adding reward.
+        tracking = min(max(progress, -TARGET_SPEED), TARGET_SPEED) / TARGET_SPEED
+        smooth = float(np.sum((action - self.prev_action) ** 2))
+        energy = float(np.sum(self.data.actuator_force ** 2))
+        fall = max(0.0, 0.35 - upright)
+        recover = max(0.0, upright - prev_upright)
+        return float(2.0 * tracking - 1.5 * lateral * lateral - 0.04 * smooth - 0.15 * energy - 0.25 * fall + 0.5 * recover)
+
+    def _randomize_domain(self):
+        scale = float(self.np_random.uniform(0.85, 1.15))
+        self.model.body_mass[:] = self.nominal_mass * scale
+        self.model.body_inertia[:] = self.nominal_inertia * scale
+        gain = float(self.np_random.uniform(0.6, 1.4))
+        self.model.actuator_gainprm[:, 0] = self.nominal_gain * gain
+        self.model.actuator_biasprm[:, 1] = self.nominal_bias * gain
+        # 0.15 N·m is the SG90 near 5 V. The low end stands in for a sagging 1S pack.
+        torque = float(self.np_random.uniform(0.08, 0.16))
+        self.model.actuator_forcerange[:] = [-torque, torque]
+        self.model.geom_friction[:, 0] = float(self.np_random.uniform(0.4, 1.8))
+        delay = int(self.np_random.integers(0, 3))
+        self.queue = [np.zeros(2) for _ in range(delay)]
+        self.grav_noise = float(self.np_random.uniform(0.0, 0.03))
+        self.gyro_noise = float(self.np_random.uniform(0.0, 0.08))
+
+    def _pose(self, fallen):
+        yaw = float(self.np_random.uniform(0.0, 2.0 * math.pi))
+        yaw_q = np.array([math.cos(yaw / 2.0), 0.0, 0.0, math.sin(yaw / 2.0)])
+        if not fallen:
+            tilt = np.array([1.0, 0.0, 0.0, 0.0])
+        else:
+            name = self.np_random.choice(tuple(FALLEN_POSES))
+            tilt = roll_pitch_to_quat(*FALLEN_POSES[name])
+        self.data.qpos[:] = 0.0
+        self.data.qvel[:] = 0.0
+        self.data.qpos[2] = 0.08
+        self.data.qpos[3:7] = quat_mul(yaw_q, tilt)
+        self.target[:] = 0.0
+        self.prev_action[:] = 0.0
+        self.data.ctrl[:] = 0.0
+        mujoco.mj_forward(self.model, self.data)
+        for _ in range(self.settle_steps):
+            mujoco.mj_step(self.model, self.data)
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
@@ -115,76 +164,67 @@ class WalkEnv(gym.Env):
             name = self.np_random.choice(COMMAND_NAMES)
         self.command_name = str(name)
         self.command = COMMANDS[self.command_name].copy()
-
-        yaw = float(self.np_random.uniform(0.0, 2.0 * math.pi))
-        self.data.qpos[:] = 0.0
-        self.data.qvel[:] = 0.0
-        self.data.qpos[2] = 0.08
-        self.data.qpos[3:7] = [
-            math.cos(yaw / 2.0),
-            0.0,
-            0.0,
-            math.sin(yaw / 2.0),
-        ]
-        self.target[:] = 0.0
-        self.data.ctrl[:] = 0.0
-        mujoco.mj_forward(self.model, self.data)
-        for _ in range(self.settle_steps):
-            mujoco.mj_step(self.model, self.data)
-
+        fallen = False if options and "fallen" in options else bool(self.np_random.random() < 0.4)
+        if options and options.get("fallen"):
+            fallen = True
+        self._randomize_domain()
+        self._pose(fallen)
         self.step_count = 0
         self.start_pos = self.data.qpos[:3].copy()
         self.start_rot = self._rotation()
-        return self._obs(), {"command": self.command_name}
+        gravity, _ = self._gravity_gyro()
+        self.upright = float(-gravity[2])
+        return self._obs(), {"command": self.command_name, "fallen_start": fallen}
 
     def step(self, action):
         action = np.clip(np.asarray(action, dtype=np.float64), -1.0, 1.0)
-        self.target += action * self.target_delta
+        self.queue.append(action.copy())
+        applied = self.queue.pop(0)
+        self.target += applied * self.target_delta
         self.target = np.clip(self.target, -self.target_limit, self.target_limit)
         for _ in range(self.frame_skip):
             self.data.ctrl[:] = self.target
             mujoco.mj_step(self.model, self.data)
 
         self.step_count += 1
-        roll, pitch = quat_to_roll_pitch(self.data.qpos[3:7])
-        vx, vy, vz = self._body_horizontal_velocity()
-        reward = self.reward(action, vx, vy, vz, roll, pitch)
+        velocity = self._body_velocity()
+        gravity, _ = self._gravity_gyro()
+        upright = float(-gravity[2])
+        reward = self.reward(applied, velocity, upright, self.upright)
+        self.upright = upright
+        self.prev_action = applied.copy()
 
         displacement = self.start_rot.T @ (self.data.qpos[:3] - self.start_pos)
         aligned = float(displacement[0] * self.command[0] + displacement[1] * self.command[1])
-        fallen_through = self.data.qpos[2] < -0.25 or not np.isfinite(self.data.qpos).all()
-        terminated = bool(fallen_through)
+        terminated = bool(self.data.qpos[2] < -0.3 or not np.isfinite(self.data.qpos).all())
         truncated = self.step_count >= self.max_steps
         info = {
             "command": self.command_name,
             "aligned_displacement": aligned,
-            "vx": vx,
-            "vy": vy,
+            "upright": upright,
+            "vx": float(velocity[0]),
+            "vy": float(velocity[1]),
         }
         return self._obs(), reward, terminated, truncated, info
 
 
 def _demo():
     env = WalkEnv()
-    for name in COMMAND_NAMES:
-        obs, info = env.reset(options={"command": name})
-        assert obs.shape == (10,)
-        assert info["command"] == name
-        assert abs(float(np.linalg.norm(obs[8:10])) - 1.0) < 1e-6
-        total = 0.0
-        for _ in range(5):
-            obs, reward, terminated, truncated, info = env.step(env.action_space.sample())
-            total += reward
-            assert np.isfinite(reward)
-            if terminated or truncated:
-                break
-        assert np.isfinite(total)
-    # Moving with the command is better than moving against it.
-    env.command = COMMANDS["forward"].copy()
-    forward = env.reward(np.zeros(2), 0.2, 0.0, 0.0, 0.0, 0.0)
-    backward = env.reward(np.zeros(2), -0.2, 0.0, 0.0, 0.0, 0.0)
-    assert forward > backward
-    print("walk env ok")
+    obs, info = env.reset(options={"command": "forward", "fallen": False})
+    assert obs.shape == (ACTOR_DIM + 3,)
+    assert abs(float(np.linalg.norm(obs[10:12])) - 1.0) < 1e-5
+    # True velocity is critic-only and is not part of the first 12 values.
+    assert obs.shape[0] == 15
+    forward = env.reward(np.zeros(2), np.array([0.06, 0.0, 0.0]), 1.0, 1.0)
+    wrong = env.reward(np.zeros(2), np.array([-0.06, 0.0, 0.0]), 1.0, 1.0)
+    assert forward > wrong
+    obs, info = env.reset(options={"command": "left", "fallen": True})
+    assert info["fallen_start"]
+    obs, reward, _, _, info = env.step(np.zeros(2))
+    assert np.isfinite(reward)
+    low, high = env.model.actuator_forcerange[0]
+    assert -0.17 < low < -0.07 and 0.07 < high < 0.17
+    print("walk env ok", "upright", round(info["upright"], 3))
 
 
 if __name__ == "__main__":

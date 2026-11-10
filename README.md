@@ -15,7 +15,7 @@ XIAO nRF54L15 Sense の LSM6DS3TR-C で姿勢を見ます。ロールまたは�
 
 単位は mm です。
 
-Fusion で開くときは `step/` のファイルを使ってください。STL は Fusion ではメッシュボディになります。STEP は同じ形状のソリッドです。
+Fusion で開くときは `step/` のファイルを使ってください。STL は Fusion ではメッシュボディになります。`step/foot_xiao_nrf54l15_sense.step`、`step/arm1.step`、`step/arm2.step` は平面と円柱の解析ソリッドで、座標は対応する STL と同じです。Fusion ではソリッドボディとして開けます。
 
 | ファイル | 対応するSTL |
 | --- | --- |

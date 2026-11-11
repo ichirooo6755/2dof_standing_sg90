@@ -1,0 +1,126 @@
+{
+  "version": "sg90-nrf54-6",
+  "uploaded_at": "2026-11-11T11:41:41.179650+09:00",
+  "status": "uploaded_and_running",
+  "original_stuck_snapshot": "output/servo_center/stuck_90/before_any_reset.json",
+  "diagnosis": "Frame counter advanced by 285 over 6 seconds in mode4 while the base was near 2 degrees and targets were zero; commanded PWM was 1500/1464. Exact cause of the mechanical 90-degree position is not yet established.",
+  "change": "FineServo skips unchanged pulse commands; change and reattach still program the output. Pad width capture is available only in manual HOLD.",
+  "calibrated_centers_us": [
+    1500,
+    1464
+  ],
+  "pad_high_us": {
+    "0": [
+      1499,
+      1501,
+      1502,
+      1503
+    ],
+    "1": [
+      1462,
+      1465,
+      1464,
+      1464
+    ]
+  },
+  "native_check": "10000 repeated identical commands on each axis produce one write per axis; changed command, reattach, and clamping cases pass",
+  "flash_bytes": 67324,
+  "static_ram_bytes": 7596,
+  "source_sha256": {
+    "policy_upright.h": "c06e47976d8fbad37e788be4233775b7bd453ac499cb76b78d6ec1e4d9bcaabb",
+    "MicrosecondClock.h": "5503e3dbf7d4ad953feffaa029611f1db73128fe895411eef9a6eb0219538df7",
+    "ServoProfile.h": "677e71ff28a0fa5934b1688e40974f57b0e0b7300edcca2b718f423e7b47167b",
+    "ImuBus.h": "e28aff84fd8ead4be342110f4483d5ae6b2aea3a803c997b33e70527dcba577c",
+    "PolicySelection.h": "f25017ef94b40596d1138ebbebebc2bb970a5732fee4cb4da3d5242bc42e03ae",
+    "standing_xiao.ino": "71055a431f9b247f6bf35006cf7a06ba5171be1febaa156c369b95b84be64422",
+    "Lsm6ds3.h": "3176b191886b3ac86be18465877c4eb3262e5dee75008713d68cb7ef644edac8",
+    "InactivityGuard.h": "580b253625f29cda804ccdbb5a8997ab5560c909f7f65ab0a79d9d27a6abf3e3",
+    "FallRecoveryGate.h": "3c832064b16a717fc992217b1b640d93d5d12af4ba346a70dbc8df6a2a54b80c",
+    "GravityFilter.h": "56a9f56320f34c741928b741b59f6deacd61c940d45438b712e1bb8d6de92279",
+    "FineServo.h": "54d11e10a39b0eb78f83941342ba7fe20d428e873daef4ed095acc09f0aaafda",
+    "MountCalibration.h": "e0d0d2be7e00e6ec5f5f13d994f12344cc2dd0def5511a3bcf04b5b516ebec79",
+    "RecoveryStrategy.h": "d647c7e1dfcefef993bf59813c09cad033d6308a2c253366804873215e587d35"
+  },
+  "physical_result": "awaiting operator observation",
+  "actor_changed": false,
+  "still_delay_ms": 300,
+  "live_monitor": {
+    "recording_seconds": 90.02025429200148,
+    "frames_received": 4521,
+    "modes": [
+      4
+    ],
+    "first_frame": 1465,
+    "last_frame": 5985,
+    "final_pwm_us": [
+      1500,
+      1464
+    ],
+    "i2c_error_counts": [
+      0,
+      1
+    ],
+    "gate_phases": [
+      0
+    ],
+    "stop_or_refusal_messages": [],
+    "metadata": [
+      "b\ufffd\ufffd\ufffd\ufffd\ufffdb\ufffd\ufffd\ufffd\u02b2bj\ufffd\ufffd\u02ba\ufffd\ufffdb\ufffd\ufffd\ufffdbj\ufffd\ufffd\ufffdb\ufffd\ufffd\ufffdb\ufffdb\ufffdb\ufffdb\ufffdb\ufffdb,0,0,1500,1464,0,0,587913,26276,0,0,20,1,0,0",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,1464,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,1717,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,1971,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,2226,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,2479,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,2734,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,2986,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,3238,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,3490,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,3742,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,3996,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,4248,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,4500,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,4752,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,5008,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,5260,1,0,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,5514,1,1,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45",
+      "CONFIG port=sg90-nrf54-6 policy=sg90_1000mah actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 still_ms=300 auto_usb=1 inactivity_stop=0 pwm_write=on_change",
+      "STATE,4,0,5768,1,1,NONE,source=2dof_standing,port=sg90-nrf54-6",
+      "GATE,phase=0,still_ms=0,starts=0,delay_ms=300,fall_deg=45"
+    ],
+    "fall_trial_detected": false
+  }
+}

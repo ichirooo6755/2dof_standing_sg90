@@ -1,0 +1,22 @@
+{"stage_steps": 0, "difficulty": 1.0, "selected": 0, "side": {"episodes": 6, "successes": 0, "faults": 0, "mean_progress_m": 0.04818848589556592, "mean_lateral_abs_m": 0.08104800979710261, "mean_edge_seconds": 0.0, "max_edge_seconds": 0.0}, "near": null, "wall_seconds": 4.524439500004519}
+{"status": "learning", "steps": 8192, "wall_seconds": 11.534046332992148}
+{"status": "learning", "steps": 16384, "wall_seconds": 18.64171587501187}
+{"status": "learning", "steps": 24576, "wall_seconds": 25.66080975002842}
+{"status": "learning", "steps": 32768, "wall_seconds": 32.8532247080002}
+{"stage_steps": 32768, "difficulty": 1.0, "selected": 32768, "side": {"episodes": 6, "successes": 0, "faults": 0, "mean_progress_m": 0.042116232341889735, "mean_lateral_abs_m": 0.05788717282827515, "mean_edge_seconds": 0.0, "max_edge_seconds": 0.0}, "near": null, "wall_seconds": 37.105608791986015}
+{"status": "learning", "steps": 40960, "wall_seconds": 44.01271620800253}
+{"status": "learning", "steps": 49152, "wall_seconds": 51.356784874980804}
+{"status": "learning", "steps": 57344, "wall_seconds": 58.748753916006535}
+{"status": "learning", "steps": 65536, "wall_seconds": 66.14896850002697}
+{"stage_steps": 65536, "difficulty": 1.0, "selected": 65536, "side": {"episodes": 6, "successes": 0, "faults": 0, "mean_progress_m": 0.04746213426613965, "mean_lateral_abs_m": 0.05246021588721531, "mean_edge_seconds": 0.0, "max_edge_seconds": 0.0}, "near": null, "wall_seconds": 70.45890520897228}
+{"status": "learning", "steps": 73728, "wall_seconds": 78.04816941602621}
+{"status": "learning", "steps": 81920, "wall_seconds": 84.6935209580115}
+{"status": "learning", "steps": 90112, "wall_seconds": 92.17355541599682}
+{"status": "learning", "steps": 98304, "wall_seconds": 99.58869900001446}
+{"stage_steps": 98304, "difficulty": 1.0, "selected": 98304, "side": {"episodes": 6, "successes": 1, "faults": 0, "mean_progress_m": 0.06609612787311805, "mean_lateral_abs_m": 0.06718348111223713, "mean_edge_seconds": 0.0, "max_edge_seconds": 0.0}, "near": null, "wall_seconds": 104.43670737498906}
+{"status": "learning", "steps": 106496, "wall_seconds": 111.93231041601393}
+{"status": "learning", "steps": 114688, "wall_seconds": 119.83211520803161}
+{"status": "learning", "steps": 122880, "wall_seconds": 127.14429666602518}
+{"status": "learning", "steps": 131072, "wall_seconds": 133.79873099998804}
+{"stage_steps": 131072, "difficulty": 1.0, "selected": 98304, "side": {"episodes": 6, "successes": 0, "faults": 0, "mean_progress_m": 0.058104889921131046, "mean_lateral_abs_m": 0.06093152329392839, "mean_edge_seconds": 0.0, "max_edge_seconds": 0.0}, "near": null, "wall_seconds": 137.894118583994}
+{"status": "complete", "task": "move", "steps": 131072, "side": {"episodes": 24, "successes": 2, "faults": 0, "mean_progress_m": 0.025637717087279587, "mean_lateral_abs_m": 0.07350599317289791, "mean_edge_seconds": 0.0, "max_edge_seconds": 0.0}, "near": null}

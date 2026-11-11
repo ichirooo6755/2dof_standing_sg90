@@ -1,0 +1,30 @@
+{
+  "nominal_only": true,
+  "joint_grid_positions": 1681,
+  "joint_grid_spacing_deg": 4.5,
+  "footprint_bounds_mm": [
+    [
+      -35.00000194175446,
+      -35.00000181523204
+    ],
+    [
+      35.00000053275232,
+      35.000000470660645
+    ]
+  ],
+  "com_horizontal_bounds_mm": [
+    [
+      -4.131484858532911,
+      -11.730905454212825
+    ],
+    [
+      3.384718530939846,
+      13.23648136237947
+    ]
+  ],
+  "min_arm_floor_clearance_mm": 14.500001198380081,
+  "angles_at_min_clearance_deg": [
+    90.0,
+    -58.5
+  ]
+}

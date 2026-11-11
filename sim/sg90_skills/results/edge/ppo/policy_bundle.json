@@ -1,0 +1,14 @@
+{
+  "task": "edge",
+  "seed_parameters": [
+    16.144505409985268,
+    3.487754829939702,
+    -3.0080262446941175,
+    -0.8047641877450359
+  ],
+  "residual_model": "best_residual.zip",
+  "residual_scale": 2.0,
+  "selected_ppo_steps": 0,
+  "observations": 10,
+  "hardware_commands_sent": false
+}

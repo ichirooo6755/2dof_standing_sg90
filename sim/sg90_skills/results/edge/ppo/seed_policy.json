@@ -1,0 +1,13 @@
+{
+  "task": "edge",
+  "parameters": [
+    16.144505409985268,
+    3.487754829939702,
+    -3.0080262446941175,
+    -0.8047641877450359
+  ],
+  "algorithm": "CEM",
+  "development_score": 5.892688275572233,
+  "input": "IMU firmware filter, commands and previous actions; move also internal clock and gyro-integrated heading",
+  "hardware_commands_sent": false
+}

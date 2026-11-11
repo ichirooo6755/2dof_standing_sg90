@@ -1,0 +1,238 @@
+<mujoco model="sg90_supplied_3mf_1000mah">
+  <compiler angle="radian" inertiafromgeom="false" meshdir="assets" />
+  <option timestep=".001" integrator="implicitfast" gravity="0 0 -9.81" iterations="30" />
+  <statistic center="0 0 .07" extent=".22" />
+  <visual>
+    <global offwidth="960" offheight="720" />
+  </visual>
+  <default>
+    <joint damping=".001" armature="2e-6" />
+    <geom friction=".7 .01 .001" condim="3" solref=".004 1" />
+  </default>
+  <asset>
+    <mesh name="base_lid_visual" file="base_lid_visual.obj" />
+    <mesh name="base_lid_collision_00" file="base_lid_collision_00.obj" />
+    <mesh name="base_lid_collision_01" file="base_lid_collision_01.obj" />
+    <mesh name="base_lid_collision_02" file="base_lid_collision_02.obj" />
+    <mesh name="base_lid_collision_03" file="base_lid_collision_03.obj" />
+    <mesh name="base_lid_collision_04" file="base_lid_collision_04.obj" />
+    <mesh name="base_lid_collision_05" file="base_lid_collision_05.obj" />
+    <mesh name="base_lid_collision_06" file="base_lid_collision_06.obj" />
+    <mesh name="base_lid_collision_07" file="base_lid_collision_07.obj" />
+    <mesh name="base_lid_collision_08" file="base_lid_collision_08.obj" />
+    <mesh name="base_lid_collision_09" file="base_lid_collision_09.obj" />
+    <mesh name="base_lid_collision_10" file="base_lid_collision_10.obj" />
+    <mesh name="base_lid_collision_11" file="base_lid_collision_11.obj" />
+    <mesh name="base_lid_collision_12" file="base_lid_collision_12.obj" />
+    <mesh name="base_lid_collision_13" file="base_lid_collision_13.obj" />
+    <mesh name="base_lid_collision_14" file="base_lid_collision_14.obj" />
+    <mesh name="base_lid_collision_15" file="base_lid_collision_15.obj" />
+    <mesh name="middle_arm_visual" file="middle_arm_visual.obj" />
+    <mesh name="middle_arm_collision_00" file="middle_arm_collision_00.obj" />
+    <mesh name="middle_arm_collision_01" file="middle_arm_collision_01.obj" />
+    <mesh name="middle_arm_collision_02" file="middle_arm_collision_02.obj" />
+    <mesh name="middle_arm_collision_03" file="middle_arm_collision_03.obj" />
+    <mesh name="middle_arm_collision_04" file="middle_arm_collision_04.obj" />
+    <mesh name="middle_arm_collision_05" file="middle_arm_collision_05.obj" />
+    <mesh name="middle_arm_collision_06" file="middle_arm_collision_06.obj" />
+    <mesh name="middle_arm_collision_07" file="middle_arm_collision_07.obj" />
+    <mesh name="middle_arm_collision_08" file="middle_arm_collision_08.obj" />
+    <mesh name="middle_arm_collision_09" file="middle_arm_collision_09.obj" />
+    <mesh name="middle_arm_collision_10" file="middle_arm_collision_10.obj" />
+    <mesh name="middle_arm_collision_11" file="middle_arm_collision_11.obj" />
+    <mesh name="middle_arm_collision_12" file="middle_arm_collision_12.obj" />
+    <mesh name="middle_arm_collision_13" file="middle_arm_collision_13.obj" />
+    <mesh name="middle_arm_collision_14" file="middle_arm_collision_14.obj" />
+    <mesh name="middle_arm_collision_15" file="middle_arm_collision_15.obj" />
+    <mesh name="upper_arm_visual" file="upper_arm_visual.obj" />
+    <mesh name="upper_arm_collision_00" file="upper_arm_collision_00.obj" />
+    <mesh name="upper_arm_collision_01" file="upper_arm_collision_01.obj" />
+    <mesh name="upper_arm_collision_02" file="upper_arm_collision_02.obj" />
+    <mesh name="upper_arm_collision_03" file="upper_arm_collision_03.obj" />
+    <mesh name="upper_arm_collision_04" file="upper_arm_collision_04.obj" />
+    <mesh name="upper_arm_collision_05" file="upper_arm_collision_05.obj" />
+    <mesh name="upper_arm_collision_06" file="upper_arm_collision_06.obj" />
+    <mesh name="upper_arm_collision_07" file="upper_arm_collision_07.obj" />
+    <mesh name="upper_arm_collision_08" file="upper_arm_collision_08.obj" />
+    <mesh name="upper_arm_collision_09" file="upper_arm_collision_09.obj" />
+    <mesh name="upper_arm_collision_10" file="upper_arm_collision_10.obj" />
+    <mesh name="upper_arm_collision_11" file="upper_arm_collision_11.obj" />
+    <mesh name="upper_arm_collision_12" file="upper_arm_collision_12.obj" />
+    <mesh name="upper_arm_collision_13" file="upper_arm_collision_13.obj" />
+    <mesh name="upper_arm_collision_14" file="upper_arm_collision_14.obj" />
+    <mesh name="upper_arm_collision_15" file="upper_arm_collision_15.obj" />
+    <mesh name="electronics_cup_visual" file="electronics_cup_visual.obj" />
+    <mesh name="electronics_cup_collision_00" file="electronics_cup_collision_00.obj" />
+    <mesh name="lower_horn_visual" file="lower_horn_visual.obj" />
+    <mesh name="lower_horn_collision_00" file="lower_horn_collision_00.obj" />
+    <mesh name="lower_horn_collision_01" file="lower_horn_collision_01.obj" />
+    <mesh name="lower_horn_collision_02" file="lower_horn_collision_02.obj" />
+    <mesh name="lower_horn_collision_03" file="lower_horn_collision_03.obj" />
+    <mesh name="lower_horn_collision_04" file="lower_horn_collision_04.obj" />
+    <mesh name="lower_horn_collision_05" file="lower_horn_collision_05.obj" />
+    <mesh name="lower_horn_collision_06" file="lower_horn_collision_06.obj" />
+    <mesh name="lower_horn_collision_07" file="lower_horn_collision_07.obj" />
+    <mesh name="lower_horn_collision_08" file="lower_horn_collision_08.obj" />
+    <mesh name="lower_horn_collision_09" file="lower_horn_collision_09.obj" />
+    <mesh name="lower_horn_collision_10" file="lower_horn_collision_10.obj" />
+    <mesh name="lower_horn_collision_11" file="lower_horn_collision_11.obj" />
+    <mesh name="lower_horn_collision_12" file="lower_horn_collision_12.obj" />
+    <mesh name="lower_horn_collision_13" file="lower_horn_collision_13.obj" />
+    <mesh name="lower_horn_collision_14" file="lower_horn_collision_14.obj" />
+    <mesh name="lower_horn_collision_15" file="lower_horn_collision_15.obj" />
+    <mesh name="upper_horn_visual" file="upper_horn_visual.obj" />
+    <mesh name="upper_horn_collision_00" file="upper_horn_collision_00.obj" />
+    <mesh name="upper_horn_collision_01" file="upper_horn_collision_01.obj" />
+    <mesh name="upper_horn_collision_02" file="upper_horn_collision_02.obj" />
+    <mesh name="upper_horn_collision_03" file="upper_horn_collision_03.obj" />
+    <mesh name="upper_horn_collision_04" file="upper_horn_collision_04.obj" />
+    <mesh name="upper_horn_collision_05" file="upper_horn_collision_05.obj" />
+    <mesh name="upper_horn_collision_06" file="upper_horn_collision_06.obj" />
+    <mesh name="upper_horn_collision_07" file="upper_horn_collision_07.obj" />
+    <mesh name="upper_horn_collision_08" file="upper_horn_collision_08.obj" />
+    <mesh name="upper_horn_collision_09" file="upper_horn_collision_09.obj" />
+    <mesh name="upper_horn_collision_10" file="upper_horn_collision_10.obj" />
+    <mesh name="upper_horn_collision_11" file="upper_horn_collision_11.obj" />
+    <mesh name="upper_horn_collision_12" file="upper_horn_collision_12.obj" />
+    <mesh name="upper_horn_collision_13" file="upper_horn_collision_13.obj" />
+    <mesh name="upper_horn_collision_14" file="upper_horn_collision_14.obj" />
+    <mesh name="upper_horn_collision_15" file="upper_horn_collision_15.obj" />
+    <mesh name="lower_servo_visual" file="lower_servo_visual.obj" />
+    <mesh name="lower_servo_collision_00" file="lower_servo_collision_00.obj" />
+    <mesh name="upper_servo_visual" file="upper_servo_visual.obj" />
+    <mesh name="upper_servo_collision_00" file="upper_servo_collision_00.obj" />
+    <mesh name="battery_visual" file="battery_visual.obj" />
+    <mesh name="powerboost_visual" file="powerboost_visual.obj" />
+    <mesh name="xiao_visual" file="xiao_visual.obj" />
+    <mesh name="base_wiring_visual" file="base_wiring_visual.obj" />
+    <mesh name="base_fasteners_visual" file="base_fasteners_visual.obj" />
+    <mesh name="middle_fasteners_visual" file="middle_fasteners_visual.obj" />
+    <mesh name="upper_fasteners_visual" file="upper_fasteners_visual.obj" />
+  </asset>
+  <worldbody>
+    <light pos="0 -.3 .6" dir="0 .5 -1" diffuse=".9 .9 .9" />
+    <geom name="floor" type="plane" size="2 2 .01" rgba=".85 .87 .9 1" />
+    <body name="base" pos="0 0 0.0146">
+      <freejoint name="root" />
+      <inertial pos="0.0004974829683 0.001052235034 -0.001372145867" mass="0.0680454117691829" fullinertia="2.764353429e-05 2.852927423e-05 3.805197249e-05 -1.562120215e-06 5.861937543e-07 5.445971169e-07" />
+      <body name="middle" pos="0 0 0.0244">
+        <joint name="j1" axis="1 0 0" range="-1.5707963267948966 1.5707963267948966" />
+        <inertial pos="-0.00268568468 0.001825773574 0.02699478371" mass="0.01714883036004096" fullinertia="3.015898956e-06 3.405435451e-06 2.150410997e-06 -8.172256358e-09 -1.839990702e-07 -1.477909072e-07" />
+        <body name="upper" pos="-0.00235 0 0.037">
+          <joint name="j2" axis="0 1 0" range="-1.5707963267948966 1.5707963267948966" />
+          <inertial pos="-9.868764452e-05 -0.0004075201434 0.03603787453" mass="0.009918552630089995" fullinertia="7.931812331e-06 6.982152837e-06 1.117359076e-06 -1.828883922e-08 -2.203055692e-08 -2.812101379e-07" />
+          <geom name="upper_arm_visual" type="mesh" mesh="upper_arm_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_00" type="mesh" mesh="upper_arm_collision_00" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_01" type="mesh" mesh="upper_arm_collision_01" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_02" type="mesh" mesh="upper_arm_collision_02" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_03" type="mesh" mesh="upper_arm_collision_03" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_04" type="mesh" mesh="upper_arm_collision_04" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_05" type="mesh" mesh="upper_arm_collision_05" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_06" type="mesh" mesh="upper_arm_collision_06" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_07" type="mesh" mesh="upper_arm_collision_07" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_08" type="mesh" mesh="upper_arm_collision_08" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_09" type="mesh" mesh="upper_arm_collision_09" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_10" type="mesh" mesh="upper_arm_collision_10" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_11" type="mesh" mesh="upper_arm_collision_11" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_12" type="mesh" mesh="upper_arm_collision_12" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_13" type="mesh" mesh="upper_arm_collision_13" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_14" type="mesh" mesh="upper_arm_collision_14" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_arm_collision_15" type="mesh" mesh="upper_arm_collision_15" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_visual" type="mesh" mesh="upper_horn_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_00" type="mesh" mesh="upper_horn_collision_00" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_01" type="mesh" mesh="upper_horn_collision_01" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_02" type="mesh" mesh="upper_horn_collision_02" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_03" type="mesh" mesh="upper_horn_collision_03" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_04" type="mesh" mesh="upper_horn_collision_04" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_05" type="mesh" mesh="upper_horn_collision_05" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_06" type="mesh" mesh="upper_horn_collision_06" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_07" type="mesh" mesh="upper_horn_collision_07" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_08" type="mesh" mesh="upper_horn_collision_08" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_09" type="mesh" mesh="upper_horn_collision_09" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_10" type="mesh" mesh="upper_horn_collision_10" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_11" type="mesh" mesh="upper_horn_collision_11" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_12" type="mesh" mesh="upper_horn_collision_12" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_13" type="mesh" mesh="upper_horn_collision_13" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_14" type="mesh" mesh="upper_horn_collision_14" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_horn_collision_15" type="mesh" mesh="upper_horn_collision_15" mass="0" group="3" rgba=".9 .48 .18 1" />
+          <geom name="upper_fasteners_visual" type="mesh" mesh="upper_fasteners_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".9 .48 .18 1" />
+        </body>
+        <geom name="middle_arm_visual" type="mesh" mesh="middle_arm_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_00" type="mesh" mesh="middle_arm_collision_00" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_01" type="mesh" mesh="middle_arm_collision_01" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_02" type="mesh" mesh="middle_arm_collision_02" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_03" type="mesh" mesh="middle_arm_collision_03" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_04" type="mesh" mesh="middle_arm_collision_04" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_05" type="mesh" mesh="middle_arm_collision_05" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_06" type="mesh" mesh="middle_arm_collision_06" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_07" type="mesh" mesh="middle_arm_collision_07" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_08" type="mesh" mesh="middle_arm_collision_08" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_09" type="mesh" mesh="middle_arm_collision_09" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_10" type="mesh" mesh="middle_arm_collision_10" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_11" type="mesh" mesh="middle_arm_collision_11" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_12" type="mesh" mesh="middle_arm_collision_12" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_13" type="mesh" mesh="middle_arm_collision_13" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_14" type="mesh" mesh="middle_arm_collision_14" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="middle_arm_collision_15" type="mesh" mesh="middle_arm_collision_15" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_visual" type="mesh" mesh="lower_horn_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_00" type="mesh" mesh="lower_horn_collision_00" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_01" type="mesh" mesh="lower_horn_collision_01" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_02" type="mesh" mesh="lower_horn_collision_02" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_03" type="mesh" mesh="lower_horn_collision_03" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_04" type="mesh" mesh="lower_horn_collision_04" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_05" type="mesh" mesh="lower_horn_collision_05" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_06" type="mesh" mesh="lower_horn_collision_06" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_07" type="mesh" mesh="lower_horn_collision_07" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_08" type="mesh" mesh="lower_horn_collision_08" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_09" type="mesh" mesh="lower_horn_collision_09" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_10" type="mesh" mesh="lower_horn_collision_10" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_11" type="mesh" mesh="lower_horn_collision_11" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_12" type="mesh" mesh="lower_horn_collision_12" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_13" type="mesh" mesh="lower_horn_collision_13" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_14" type="mesh" mesh="lower_horn_collision_14" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="lower_horn_collision_15" type="mesh" mesh="lower_horn_collision_15" mass="0" group="3" rgba=".9 .48 .18 1" />
+        <geom name="upper_servo_visual" type="mesh" mesh="upper_servo_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".32 .55 .75 1" />
+        <geom name="upper_servo_collision_00" type="mesh" mesh="upper_servo_collision_00" mass="0" group="3" rgba=".32 .55 .75 1" />
+        <geom name="middle_fasteners_visual" type="mesh" mesh="middle_fasteners_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".9 .48 .18 1" />
+      </body>
+      <geom name="base_lid_visual" type="mesh" mesh="base_lid_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_00" type="mesh" mesh="base_lid_collision_00" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_01" type="mesh" mesh="base_lid_collision_01" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_02" type="mesh" mesh="base_lid_collision_02" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_03" type="mesh" mesh="base_lid_collision_03" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_04" type="mesh" mesh="base_lid_collision_04" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_05" type="mesh" mesh="base_lid_collision_05" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_06" type="mesh" mesh="base_lid_collision_06" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_07" type="mesh" mesh="base_lid_collision_07" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_08" type="mesh" mesh="base_lid_collision_08" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_09" type="mesh" mesh="base_lid_collision_09" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_10" type="mesh" mesh="base_lid_collision_10" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_11" type="mesh" mesh="base_lid_collision_11" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_12" type="mesh" mesh="base_lid_collision_12" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_13" type="mesh" mesh="base_lid_collision_13" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_14" type="mesh" mesh="base_lid_collision_14" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="base_lid_collision_15" type="mesh" mesh="base_lid_collision_15" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="electronics_cup_visual" type="mesh" mesh="electronics_cup_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".24 .65 .45 1" />
+      <geom name="electronics_cup_collision_00" type="mesh" mesh="electronics_cup_collision_00" mass="0" group="3" rgba=".24 .65 .45 1" />
+      <geom name="lower_servo_visual" type="mesh" mesh="lower_servo_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".32 .55 .75 1" />
+      <geom name="lower_servo_collision_00" type="mesh" mesh="lower_servo_collision_00" mass="0" group="3" rgba=".32 .55 .75 1" />
+      <geom name="battery_visual" type="mesh" mesh="battery_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".85 .7 .15 1" />
+      <geom name="powerboost_visual" type="mesh" mesh="powerboost_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".24 .65 .45 1" />
+      <geom name="xiao_visual" type="mesh" mesh="xiao_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".24 .65 .45 1" />
+      <geom name="base_wiring_visual" type="mesh" mesh="base_wiring_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".24 .65 .45 1" />
+      <geom name="base_fasteners_visual" type="mesh" mesh="base_fasteners_visual" mass="0" contype="0" conaffinity="0" group="1" rgba=".24 .65 .45 1" />
+      <site name="imu" pos="-0.02 -0.021 -0.006" size=".001" />
+    </body>
+  </worldbody>
+  <sensor>
+    <accelerometer name="accel" site="imu" />
+    <gyro name="gyro" site="imu" />
+  </sensor>
+  <actuator>
+    <motor name="j1_motor" joint="j1" ctrllimited="true" ctrlrange="-.18 .18" />
+    <motor name="j2_motor" joint="j2" ctrllimited="true" ctrlrange="-.18 .18" />
+  </actuator>
+  <keyframe>
+    <key name="upright" qpos="0 0 0.0146 1 0 0 0 0 0" />
+  </keyframe>
+</mujoco>

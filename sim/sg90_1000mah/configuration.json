@@ -1,0 +1,19 @@
+{
+  "upstream_commit": "3a9cb54fc3088ccf10322d8de4ceb0128a317056",
+  "source_3mf_sha256": "16f7b47ca7f635bfdae7d9f9154e09c4ea0fd0f629cfce48da9f73a6c2bd3439",
+  "battery": {"model_inferred_from_label": "DTP603450(PHR)", "capacity_mAh": 1000, "voltage_V": 3.7, "mass_g": 20.0, "training_mass_range_g": [18,22], "size_mm": [34,50,6], "center_mm": [9,5,-8], "status": "Manufacturer specifies less than 20g cell; 18-22g assembly uncertainty, not measured"},
+  "powerboost": {"model": "Adafruit PowerBoost 500, Basic vs Charger unspecified", "mass_g": 3.5, "training_mass_range_g": [3,4.5], "size_mm": [22,28,7], "center_mm": [-22,8,-7], "output_V": 5.2, "status": "Basic 3g / 500C 4g manufacturer nominal; provisional midpoint and mounting position"},
+  "xiao": {"mass_g": 3.0, "size_mm": [21,17.8,5], "center_mm": [-20,-21,-6], "status": "Assumed unweighed board with headers; mounting identity retained from existing firmware"},
+  "servo": {"model": "SG90", "each_mass_g": 9.0, "published_stall_torque_Nm_at_4_8V": 0.1765197, "published_no_load_speed_rad_s": 10.4719755, "nominal_effective_stall_torque_Nm": 0.13, "training_stall_torque_range_Nm": [0.075,0.1765197], "training_no_load_speed_range_rad_s": [5.5,10.47], "kp_range_Nm_rad": [0.35,0.85], "command_delay_ticks": [0,3], "shared_torque_budget_Nm_range": [0.10,0.25], "status": "Torque-speed and supply saturation are approximate; shared torque budget is a conservative uncalibrated proxy, not an electrical circuit simulation"},
+  "mass_randomization": {"printed_scale_range": [0.90,1.10], "servo_scale_range": [0.94,1.06], "other_scale_range": [0.85,1.15], "body_com_jitter_mm": 2.0},
+  "friction_range": [0.25,1.25],
+  "joint_limit_deg": 90,
+  "joint_origins_cad_mm": {"base": [0,0,0], "middle": [0,0,24.4], "upper": [-2.35,0,61.4]},
+  "printed_horn_placement": {"lower_center_mm": [-24.6,0,32.06965], "upper_center_mm": [-3.391,-21.3,69.06965], "status": "Reconstructed from upstream pivot axes and enlarged 3MF fork geometry; the 3MF has print layout, not joint mates"},
+  "sources": {
+    "sg90": "https://towerpro.com.tw/product/sg90-7/",
+    "battery": "https://www.sengoku.co.jp/item/pdf/SPE-DTP603450%28PHR%29-3.7V-1000mAh-en-2.0ver.pdf",
+    "boost_basic": "https://www.adafruit.com/product/1903",
+    "boost_charger": "https://www.adafruit.com/product/1944"
+  }
+}

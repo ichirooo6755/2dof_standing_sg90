@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+.DS_Store
+build/
+output/
+.venv-sim/
+sim/sg90_1000mah/results/mpl-cache/

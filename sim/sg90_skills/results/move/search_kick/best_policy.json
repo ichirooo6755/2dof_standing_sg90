@@ -1,0 +1,21 @@
+{
+  "task": "move",
+  "parameters": [
+    -2.346989486090844,
+    0.32326317694231005,
+    1.0034934776913185,
+    -0.3926689049191824,
+    -1.217003340066969,
+    -0.05372603300164708,
+    -2.1033398309180322,
+    0.11720479558243252,
+    -0.3750375272923097,
+    -1.4726381766970742,
+    -1.8440986126282688,
+    0.18940450824426733
+  ],
+  "algorithm": "CEM",
+  "development_score": 0.8076129874321473,
+  "input": "IMU firmware filter, commands and previous actions; move also internal clock and gyro-integrated heading",
+  "hardware_commands_sent": false
+}

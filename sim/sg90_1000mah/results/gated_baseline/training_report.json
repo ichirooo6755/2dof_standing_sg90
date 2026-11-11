@@ -1,0 +1,10 @@
+{
+  "status": "evaluating_initial",
+  "host": "sugawaraichirounoMacBook-Pro.local",
+  "requested_steps": 0,
+  "envs": 8,
+  "initial_actor": "/Users/sugawaraichirou/Documents/sg90/sim/sg90_1000mah/results/run_20261111/best_trained.zip",
+  "stages": [],
+  "hardware_commands_sent": false,
+  "gate": "candidate with 45 degree detection"
+}

@@ -1,0 +1,37 @@
+{
+  "status": "baseline_complete",
+  "host": "sugawaraichirounoMacBook-Pro.local",
+  "requested_steps": 0,
+  "envs": 8,
+  "initial_actor": "/Users/sugawaraichirou/Documents/sg90/sim/sg90_1000mah/results/run_20261111/best_trained.zip",
+  "stages": [],
+  "hardware_commands_sent": false,
+  "gate": "candidate with 45 degree detection",
+  "still_filter_s": 0.08,
+  "held_out_initial": {
+    "0.3": {
+      "episodes": 24,
+      "policy_started": 17,
+      "recovered": 17,
+      "control_faults": 7,
+      "no_trigger_reasons": {
+        "stillness_timeout": 7
+      },
+      "max_gate_time_s": 3.4599999999997566,
+      "earliest_start_after_quiet_s": 0.30299999999996663,
+      "mean_capped_policy_time_s": 10.445833333333335
+    },
+    "0.5": {
+      "episodes": 24,
+      "policy_started": 14,
+      "recovered": 14,
+      "control_faults": 10,
+      "no_trigger_reasons": {
+        "stillness_timeout": 10
+      },
+      "max_gate_time_s": 1.699999999999835,
+      "earliest_start_after_quiet_s": 0.5009999999999448,
+      "mean_capped_policy_time_s": 13.964166666666666
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "version": "sg90-nrf54-7",
+  "status": "uploaded_and_running",
+  "updated_at": "2026-11-11T11:56:35.184853+09:00",
+  "board_usb_serial": "6E0C2EEC",
+  "operator_after_power_cycle": "なんか電源入れ直したら治ったけど。",
+  "diagnosis": "The control loop continued to advance while the arm remained bent and commanded targets were zero. The exact component/state cleared by the power cycle is unconfirmed.",
+  "change": "Use foreground D0/D1 pulse generation from the working commissioning method. Pulses are completed before IMU reads and actor inference. Repeating hardware PWM was replaced.",
+  "calibrated_centers_us": [
+    1500,
+    1464
+  ],
+  "still_delay_ms": 300,
+  "actor_header_sha256": "c06e47976d8fbad37e788be4233775b7bd453ac499cb76b78d6ec1e4d9bcaabb",
+  "actor_changed": false,
+  "flash_bytes": 63620,
+  "static_ram_bytes": 7620,
+  "native_check": "Normal service entrypoint, two calibrated pulse widths, repeat frames, clamp limits, detach/reattach and micros wrap passed.",
+  "measurement_scope": "PWM generated_high_us reports software generation duration. GPIO pad pulse captures in port6 are separate evidence.",
+  "source_sha256": {
+    "policy_upright.h": "c06e47976d8fbad37e788be4233775b7bd453ac499cb76b78d6ec1e4d9bcaabb",
+    "MicrosecondClock.h": "5503e3dbf7d4ad953feffaa029611f1db73128fe895411eef9a6eb0219538df7",
+    "ServoProfile.h": "677e71ff28a0fa5934b1688e40974f57b0e0b7300edcca2b718f423e7b47167b",
+    "ImuBus.h": "e28aff84fd8ead4be342110f4483d5ae6b2aea3a803c997b33e70527dcba577c",
+    "PolicySelection.h": "f25017ef94b40596d1138ebbebebc2bb970a5732fee4cb4da3d5242bc42e03ae",
+    "standing_xiao.ino": "65e771f64ab9bb3e0d03b0f77fe5dadf37a946685e91217c5633e70735c8f844",
+    "Lsm6ds3.h": "3176b191886b3ac86be18465877c4eb3262e5dee75008713d68cb7ef644edac8",
+    "InactivityGuard.h": "580b253625f29cda804ccdbb5a8997ab5560c909f7f65ab0a79d9d27a6abf3e3",
+    "FallRecoveryGate.h": "3c832064b16a717fc992217b1b640d93d5d12af4ba346a70dbc8df6a2a54b80c",
+    "GravityFilter.h": "56a9f56320f34c741928b741b59f6deacd61c940d45438b712e1bb8d6de92279",
+    "FineServo.h": "cb8bb8f12c604921cc294b3ced10e7256ee2a3e693f5845b8253861cbe8d1391",
+    "MountCalibration.h": "e0d0d2be7e00e6ec5f5f13d994f12344cc2dd0def5511a3bcf04b5b516ebec79",
+    "RecoveryStrategy.h": "d647c7e1dfcefef993bf59813c09cad033d6308a2c253366804873215e587d35"
+  },
+  "post_power_cycle_summary": {
+    "frames_received": 298,
+    "frame_first": 2121,
+    "frame_last": 2419,
+    "mode_last": 4,
+    "pwm_last": [
+      1500,
+      1464
+    ],
+    "gate_last": 1,
+    "tilt_deg_last": 99.89981968206779,
+    "inference_us_last": 0,
+    "late_us_last": 2890,
+    "i2c_errors_last": 0
+  },
+  "post_power_cycle_final_log": "output/servo_center/stuck_90/after_power_cycle_final.txt",
+  "cause_confirmed": false
+}

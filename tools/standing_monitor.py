@@ -9,6 +9,15 @@ from pathlib import Path
 import serial
 from serial.tools import list_ports
 
+try:
+    import termios
+except ImportError:  # termios is unavailable on Windows
+    SERIAL_IO_ERRORS = (serial.SerialException, OSError)
+else:
+    # On macOS/Python 3.14, tcdrain can raise termios.error directly when
+    # USB disappears; it is not necessarily an OSError subclass.
+    SERIAL_IO_ERRORS = (serial.SerialException, OSError, termios.error)
+
 
 def numeric_fields(line):
     result = {}
@@ -42,6 +51,7 @@ def main():
     next_query = 0.
     query_index = 0
     last_progress = 0.
+    recording_error = None
     try:
         with serial.Serial(port, 115200, timeout=.1, write_timeout=1) as device:
             with (args.out / "telemetry.txt").open("w") as log:
@@ -75,6 +85,11 @@ def main():
                         print(json.dumps({"seconds": round(elapsed, 1),
                                           "frames": len(frames),
                                           "mode": frames[-1][2] if frames else None}), flush=True)
+    except SERIAL_IO_ERRORS as error:
+        recording_error = str(error)
+        events.append({"seconds": time.monotonic() - started,
+                       "line": "TRANSPORT_ERROR: " + recording_error})
+        print("TRANSPORT_ERROR: " + recording_error, flush=True)
     finally:
         pwm = [event["fields"] for event in events if event["line"].startswith("PWM,")]
         health = [event["fields"] for event in events if event["line"].startswith("HEALTH,")]
@@ -92,9 +107,12 @@ def main():
             "last_health": health[-1] if health else None,
             "events": events,
             "motion_commands_sent": False,
+            "recording_error": recording_error,
         }
         (args.out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         print(json.dumps({key: value for key, value in summary.items() if key != "events"}), flush=True)
+    if recording_error:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

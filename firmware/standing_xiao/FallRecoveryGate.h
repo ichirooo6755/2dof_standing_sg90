@@ -18,6 +18,8 @@ struct FallRecoveryGate {
 
   void reset(){*this=FallRecoveryGate();}
   bool recovering()const{return phase==RECOVERING;}
+  // Do not move while waiting for the requested continuous still interval.
+  bool runActor()const{return phase==RECOVERING;}
   uint32_t stillMs(uint32_t now)const{
     if(phase!=WAITING||!stillTracking)return 0;
     const uint32_t ms=uint32_t(now-stillAt)/1000;

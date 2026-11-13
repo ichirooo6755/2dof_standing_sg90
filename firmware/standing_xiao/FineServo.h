@@ -12,10 +12,14 @@ class FineServo {
     if(pin!=PIN_D0&&pin!=PIN_D1)return INVALID_SERVO;
     const uint8_t axis=pin==PIN_D0?0:1;
     if(channels_[axis]&&channels_[axis]!=this)return INVALID_SERVO;
+    // L15 D0/D1 are P1.04/P1.05; LM20A D0/D1 are P1.00/P1.31.
+    // Resolve the selected board's actual pad before enabling input readback.
+    uint8_t port=0,bit=0;
+    if(!pinToPortPin(pin,&port,&bit)||port!=1||bit>=32)return INVALID_SERVO;
     if(active_)detach();
     pin_=pin;minimum_=minimum;maximum_=maximum;
     digitalWrite(pin_,LOW);pinMode(pin_,OUTPUT);
-    NRF_P1->PIN_CNF[4+axis]&=~GPIO_PIN_CNF_INPUT_Msk;
+    NRF_P1->PIN_CNF[bit]&=~GPIO_PIN_CNF_INPUT_Msk;
     channels_[axis]=this;active_=true;return 0;
   }
   void writeMicroseconds(int us){

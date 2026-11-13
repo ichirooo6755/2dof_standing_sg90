@@ -2,6 +2,9 @@
 #include <Arduino.h>
 #include "ImuBus.h"
 #include <math.h>
+#if defined(ARDUINO_NRF54LM20A)
+#include <npm1300.h>
+#endif
 
 // Classic XIAO Sense LSM6DS3TR-C; no external library or external I2C wires.
 // Register/scaling reference: ST LSM6DS3TR-C datasheet, DocID030071 Rev 3.
@@ -22,12 +25,22 @@ class Lsm6ds3 {
 
   bool begin() {
     ready = false;
+#if defined(ARDUINO_NRF54LM20A)
+    // The LM20A Sense IMU selects I2C using CS and takes power from nPM1300
+    // LDO1, not the L15's PIN_IMU_MIC_PWR load-switch pin.
+    pinMode(PIN_IMU_CS, OUTPUT);
+    digitalWrite(PIN_IMU_CS, HIGH);
+    delay(10);
+    if (!npm1300_imu_mic_power_enable(true)) { ++errors; return false; }
+    delay(50);
+#else
     // nRF54L15 Sense IMU/MIC load-switch enable, not direct sensor supply.
     pinMode(PIN_IMU_MIC_PWR, OUTPUT);
     digitalWrite(PIN_IMU_MIC_PWR, LOW);
     delay(20);
     digitalWrite(PIN_IMU_MIC_PWR, HIGH);
     delay(50);
+#endif
     bus.begin();
     const uint8_t candidates[] = {0x6a, 0x6b};
     for (uint8_t candidate : candidates) {

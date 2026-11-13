@@ -1,5 +1,5 @@
 // Port of ggoonnzzaallo/2dof_standing controller 0.9, commit 3a9cb54.
-// XIAO nRF54L15 Sense + SG90s, D0 lower / D1 upper. See README.md.
+// XIAO nRF54L15 Sense or nRF54LM20A Sense + SG90s, D0 lower / D1 upper.
 #include <Arduino.h>
 #include <string.h>
 #include <stdio.h>
@@ -17,8 +17,27 @@ extern "C" uint32_t nrf54_core_reset_reason(void);
 extern "C" void nrf54_core_clear_reset_reason(uint32_t mask);
 static_assert(!POLICY_RETRIES || POLICY_ACTION_INCREMENT_RAD==RecoveryStrategy::increment,"Retry integration rate mismatch");
 static_assert(CONTROL_LIMIT_RAD==RecoveryStrategy::limit,"Control and recovery range differ");
-#ifndef ARDUINO_ARCH_NRF54L15CLEAN
-#error "Use XIAO nRF54L15 / Sense, lolren core 1.0.23."
+#if !defined(ARDUINO_ARCH_NRF54L15CLEAN) || (!defined(ARDUINO_XIAO_NRF54L15_CLEAN) && !defined(ARDUINO_NRF54LM20A))
+#error "Use XIAO nRF54L15 / Sense or XIAO nRF54LM20A / Sense, lolren core 1.0.23."
+#endif
+#if defined(ARDUINO_NRF54LM20A)
+#define ROBOT_PORT_ID "sg90-lm20a-2"
+#define ROBOT_BOARD_NAME "SG90-nRF54LM20A"
+#define ROBOT_IMU_AXES "-1,-2,3"
+#else
+#define ROBOT_PORT_ID "sg90-nrf54-9"
+#define ROBOT_BOARD_NAME "SG90-nRF54L15"
+#define ROBOT_IMU_AXES "1,2,3"
+#endif
+#if defined(ARDUINO_NRF54_CPU_128M)
+#define ROBOT_CPU_MHZ "128"
+#else
+#define ROBOT_CPU_MHZ "64"
+#endif
+#if defined(SG90_IMU_BENCH_ONLY)
+#define ROBOT_AUTO_USB "0"
+#else
+#define ROBOT_AUTO_USB "1"
 #endif
 
 enum Mode { OFF=0, HOLD=1, RUN=2, SHADOW=3, STANDALONE=4, CHARGE=5, INACTIVE=6 };
@@ -73,14 +92,14 @@ void beginCharge(){
 bool fresh(){return imu.ready&&attitude.ready&&sampleAt&&uint32_t(clockUs.now()-sampleAt)<20000;}
 bool validStartBattery(){return true;} // Voltage guard awaits nRF54 ADC calibration.
 void status(){
-  Serial.println("ROBOT POLICY CONTROL 0.9 / SG90-nRF54L15 port 9");
+  Serial.println("ROBOT POLICY CONTROL 0.9 / " ROBOT_BOARD_NAME " port=" ROBOT_PORT_ID);
   Serial.print("POLICY_GEOMETRY: ");Serial.println(POLICY_GEOMETRY);
   Serial.print("POLICY_ACTOR_SHA256: ");Serial.println(POLICY_ACTOR_SHA256);
   Serial.print("POLICY_RUNTIME_SHA256: ");Serial.println(POLICY_RUNTIME_SHA256);
   Serial.print("MODE: ");Serial.println(int(mode));
   Serial.print("IMU_READY: ");Serial.println(imu.ready?1:0);
   Serial.print("FILTER_READY: ");Serial.println(attitude.ready?1:0);
-  Serial.println("SERVO_PINS: lower=D0, upper=D1; IMU axes=1,2,3.");
+  Serial.println("SERVO_PINS: lower=D0, upper=D1; IMU axes=" ROBOT_IMU_AXES ".");
   Serial.println("RANGE: +/-90 deg targets, SG90 PWM 500..2500 us, centers=1500,1464; no shaft feedback.");
   Serial.print("PROFILE: 50 Hz, action increment rad: ");Serial.println(POLICY_ACTION_INCREMENT_RAD);
   Serial.print("VARIED_RETRIES: ");Serial.println(POLICY_RETRIES?1:0);
@@ -90,7 +109,11 @@ void status(){
   Serial.println("GUARDS: supervised trials need heartbeat; automatic standalone retains sensor/timing/numeric stops.");
   Serial.println("INACTIVITY: stop disabled; continuous operation requested.");
   Serial.print("INACTIVITY_LOCKED: ");Serial.println(inactivity.locked?1:0);
+#if defined(SG90_IMU_BENCH_ONLY)
+  Serial.println("BOOT: IMU commissioning only; PWM disabled.");
+#else
   Serial.println("BOOT: USB and battery auto-start after IMU ready + neutral hold.");
+#endif
   Serial.println("BATTERY_GUARD: unavailable/uncalibrated; battery_mv=0 means NA.");
   Serial.print("LAST_STOP: ");Serial.println(lastStopReason);
   Serial.println("POWER: off/charge stop PWM only; no nRF52840 charger GPIOs used.");
@@ -99,6 +122,10 @@ void status(){
 }
 void arm(){
   stop();
+#if defined(SG90_IMU_BENCH_ONLY)
+  Serial.println("REFUSED: IMU commissioning build; PWM disabled.");
+  return;
+#endif
   if(inactivity.locked){Serial.println("REFUSED: inactivity lock; reboot required before arming.");return;}
   if(!fresh()){Serial.println("REFUSED: IMU/filter is not fresh and ready.");return;}
   if(!validStartBattery()){Serial.println("REFUSED: battery start guard, 3700..4400 mV.");return;}
@@ -135,6 +162,10 @@ void beginControl(bool shadow,bool standalone=false){
   inactivity.begin(millis(),accelBase);
 }
 void automaticStartup(){
+#if defined(SG90_IMU_BENCH_ONLY)
+  bootPending=bootNeutral=false;
+  return;
+#endif
   if(!bootPending&&!bootNeutral)return;
   if(bootPending){
     if(uint32_t(millis()-bootAt)>=15000){halt("automatic startup: IMU initialization timeout; reboot or explicitly arm.");return;}
@@ -182,7 +213,7 @@ bool infer(){
   for(int i=0;i<3;++i){observation[i]=clip(attitude.down[i]);observation[i+3]=clip(gyroBase[i]/10.f);}
   for(int i=0;i<2;++i){observation[i+6]=clip(target[i]/CONTROL_LIMIT_RAD);observation[i+8]=previous[i];}
   for(float value:observation)if(!isfinite(value)){halt("non-finite observation.");return false;}
-  const bool actorActive=fallGate.recovering();
+  const bool actorActive=fallGate.runActor();
   if(actorActive){
     // Start retries from the actual recovery onset, excluding the still wait.
     if(!actorWasActive){
@@ -218,7 +249,7 @@ bool infer(){
 void reportState(){
   if(!Serial)return;
   char row[256];
-  int n=snprintf(row,sizeof(row),"STATE,%d,%u,%lu,%d,%lu,%s,source=2dof_standing,port=sg90-nrf54-9\n",int(mode),unsigned(batteryMv),
+  int n=snprintf(row,sizeof(row),"STATE,%d,%u,%lu,%d,%lu,%s,source=2dof_standing,port=" ROBOT_PORT_ID "\n",int(mode),unsigned(batteryMv),
     static_cast<unsigned long>(frames),fresh()?1:0,static_cast<unsigned long>(imu.errors),lastStopReason);
   if(n>0&&size_t(n)<sizeof(row)&&Serial.availableForWrite()>=n)
     Serial.write(reinterpret_cast<const uint8_t*>(row),size_t(n));
@@ -234,7 +265,7 @@ void reportSensors(){
     Serial.write(reinterpret_cast<const uint8_t*>(row),size_t(n));
 }
 void reportConfig(){
-  const char* row="CONFIG port=sg90-nrf54-9 actor=c06e4797 pins=0,1 axes=1,2,3 center_us=1500,1464 range_us=500,2500 fall_deg=15 cancel_deg=8 still_ms=300 auto_usb=1 inactivity_stop=0 pwm=scheduled\n";
+  const char* row="CONFIG port=" ROBOT_PORT_ID " actor=c06e4797 pins=0,1 axes=" ROBOT_IMU_AXES " center_us=1500,1464 range_us=500,2500 fall_deg=15 cancel_deg=8 still_ms=300 cpu_mhz=" ROBOT_CPU_MHZ " auto_usb=" ROBOT_AUTO_USB " inactivity_stop=0 pwm=scheduled\n";
   size_t n=strlen(row);if(Serial.availableForWrite()>=int(n))Serial.write(reinterpret_cast<const uint8_t*>(row),n);
 }
 void reportGate(){
@@ -255,10 +286,12 @@ void reportPwm(){
   if(n>0&&size_t(n)<sizeof(row)&&Serial.availableForWrite()>=n)Serial.write(reinterpret_cast<const uint8_t*>(row),size_t(n));
 }
 void reportHealth(){
-  char row[160];
-  const int n=snprintf(row,sizeof(row),"HEALTH,uptime_ms=%lu,reset_reason=%lu,max_inference_us=%lu,max_loop_us=%lu,frames=%lu\n",
+  char row[256];
+  const int n=snprintf(row,sizeof(row),"HEALTH,uptime_ms=%lu,reset_reason=%lu,max_inference_us=%lu,max_loop_us=%lu,frames=%lu,imu_samples=%lu,imu_errors=%lu,bus_tx_errors=%lu,bus_rx_errors=%lu,last_bus_hw=%lu\n",
     static_cast<unsigned long>(millis()),static_cast<unsigned long>(bootResetReason),
-    static_cast<unsigned long>(maxInferenceUs),static_cast<unsigned long>(maxLoopUs),static_cast<unsigned long>(frames));
+    static_cast<unsigned long>(maxInferenceUs),static_cast<unsigned long>(maxLoopUs),static_cast<unsigned long>(frames),
+    static_cast<unsigned long>(imu.sequence),static_cast<unsigned long>(imu.errors),
+    static_cast<unsigned long>(imu.bus.txFailures),static_cast<unsigned long>(imu.bus.rxFailures),static_cast<unsigned long>(imu.bus.lastHardwareFailure));
   if(n>0&&size_t(n)<sizeof(row)&&Serial.availableForWrite()>=n)Serial.write(reinterpret_cast<const uint8_t*>(row),size_t(n));
 }
 bool buttonPressed(){
@@ -300,7 +333,12 @@ void setup(){
   bootResetReason=nrf54_core_reset_reason();nrf54_core_clear_reset_reason(bootResetReason);
   stop();pinMode(PIN_BUTTON,INPUT_PULLUP);pinMode(LED_BUILTIN,OUTPUT);digitalWrite(LED_BUILTIN,HIGH);
   Serial.begin(115200);clockUs.begin();imu.begin();batteryMv=readBatteryMv();
-  bootAt=millis();bootPending=true;
+  bootAt=millis();
+#if defined(SG90_IMU_BENCH_ONLY)
+  bootPending=false;lastStopReason="IMU commissioning; PWM disabled.";
+#else
+  bootPending=true;
+#endif
 }
 void loop(){
   uint32_t now=clockUs.now();

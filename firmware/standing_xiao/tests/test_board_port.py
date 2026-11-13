@@ -36,12 +36,30 @@ TEST = r'''
 #include "FineServo.h"
 #include "MountCalibration.h"
 #include "FallRecoveryGate.h"
+#include "StartupWait.h"
 #include "ServoProfile.h"
 #include <cassert>
 #include <cmath>
 #include <initializer_list>
 
 int main(){
+  // Startup may wait longer than 15 s for a still, fresh sensor, but never
+  // arm early; a failed sensor initialization is retried at bounded intervals.
+  StartupWait startup;startup.begin(1000);
+  assert(!startup.mayArm(2999,true));
+  assert(startup.mayArm(3000,true));
+  assert(!startup.mayArm(20000,false) && startup.delayed(20000));
+  assert(startup.mayArm(20001,true));
+  assert(!startup.retryImu(2999,false));
+  assert(startup.retryImu(3000,false));
+  assert(!startup.retryImu(4999,false));
+  assert(!startup.retryImu(5000,true));
+  assert(startup.retryImu(5000,false));
+  startup.begin(100,true);
+  assert(startup.mayArm(100,true));
+  assert(!startup.retryImu(2099,false));
+  assert(startup.retryImu(2100,false));
+
   for(auto& p:gpio.PIN_CNF)p=0xff;
   FineServo lower,upper;
   assert(lower.attach(PIN_D0,500,2500)!=INVALID_SERVO);
@@ -134,4 +152,4 @@ with tempfile.TemporaryDirectory() as directory:
             check=True,
         )
         subprocess.run([str(binary)], check=True)
-        print(f"PASS {label}: board pad mapping, PWM hold, IMU axes, and 0.3s fall gate")
+        print(f"PASS {label}: board pad mapping, PWM hold, IMU axes, startup wait, and 0.3s fall gate")

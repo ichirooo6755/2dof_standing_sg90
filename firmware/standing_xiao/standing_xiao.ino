@@ -12,6 +12,7 @@
 #include "InactivityGuard.h"
 #include "RecoveryStrategy.h"
 #include "FallRecoveryGate.h"
+#include "StartupWait.h"
 #include "PolicySelection.h"
 extern "C" uint32_t nrf54_core_reset_reason(void);
 extern "C" void nrf54_core_clear_reset_reason(uint32_t mask);
@@ -21,7 +22,7 @@ static_assert(CONTROL_LIMIT_RAD==RecoveryStrategy::limit,"Control and recovery r
 #error "Use XIAO nRF54L15 / Sense or XIAO nRF54LM20A / Sense, lolren core 1.0.23."
 #endif
 #if defined(ARDUINO_NRF54LM20A)
-#define ROBOT_PORT_ID "sg90-lm20a-2"
+#define ROBOT_PORT_ID "sg90-lm20a-3"
 #define ROBOT_BOARD_NAME "SG90-nRF54LM20A"
 #define ROBOT_IMU_AXES "-1,-2,3"
 #else
@@ -45,6 +46,7 @@ Mode mode=OFF;
 InactivityGuard inactivity;
 RecoveryStrategy recovery;
 FallRecoveryGate fallGate;
+StartupWait startupWait;
 bool actorWasActive=false;
 bool supervisorOverride=false;
 const char* INACTIVE_REASON="IMU inactive for 60 s; reboot required. PWM off; charging available.";
@@ -61,7 +63,6 @@ uint32_t maxInferenceUs=0,maxLoopUs=0,lastLoopAtUs=0,bootResetReason=0;
 uint8_t lowCount=0;
 bool hadSerial=false,discard=false;
 bool bootPending=false,bootNeutral=false;
-uint32_t bootAt=0;
 char command[24];size_t used=0;
 const char* HEADER="frame,t_us,mode,obs0_u6,obs1_u6,obs2_u6,obs3_u6,obs4_u6,obs5_u6,obs6_u6,obs7_u6,obs8_u6,obs9_u6,action0_u6,action1_u6,target0_urad,target1_urad,pwm0_us,pwm1_us,battery_mv,inference_us,late_us,sample_age_us,sample_seq,i2c_errors,dropped,filter_rejects,override,fall_gate,still_ms";
 
@@ -168,8 +169,15 @@ void automaticStartup(){
 #endif
   if(!bootPending&&!bootNeutral)return;
   if(bootPending){
-    if(uint32_t(millis()-bootAt)>=15000){halt("automatic startup: IMU initialization timeout; reboot or explicitly arm.");return;}
-    if(uint32_t(millis()-bootAt)<2000||!fresh())return;
+    uint32_t now=millis();
+    if(startupWait.retryImu(now,imu.ready)){
+      // Outputs are detached throughout bootPending. A failed one-time IMU
+      // init can be transient, so retry only here, never after a runtime stop.
+      sampleAt=0;attitude=GravityFilter();imu.begin();
+      now=millis();
+    }
+    if(startupWait.delayed(now))lastStopReason="Waiting for IMU and stationary attitude; PWM off.";
+    if(!startupWait.mayArm(now,fresh()))return;
     // arm() enforces sensor/attach guards and cancels pending startup.
     arm();
     if(mode==HOLD)bootNeutral=true;
@@ -333,11 +341,11 @@ void setup(){
   bootResetReason=nrf54_core_reset_reason();nrf54_core_clear_reset_reason(bootResetReason);
   stop();pinMode(PIN_BUTTON,INPUT_PULLUP);pinMode(LED_BUILTIN,OUTPUT);digitalWrite(LED_BUILTIN,HIGH);
   Serial.begin(115200);clockUs.begin();imu.begin();batteryMv=readBatteryMv();
-  bootAt=millis();
+  startupWait.begin(millis());
 #if defined(SG90_IMU_BENCH_ONLY)
   bootPending=false;lastStopReason="IMU commissioning; PWM disabled.";
 #else
-  bootPending=true;
+  bootPending=true;lastStopReason="Waiting for IMU and stationary attitude; PWM off.";
 #endif
 }
 void loop(){
@@ -350,7 +358,7 @@ void loop(){
   if(mode==HOLD)FineServo::service();
   if(buttonPressed()){
     if(mode!=OFF||bootPending||bootNeutral)halt("USR stop.");
-    else{bootAt=millis()-2000;bootPending=true;}
+    else{startupWait.begin(millis(),true);bootPending=true;}
   }
   if(uint32_t(now-lastPoll)>=750){
     lastPoll=now;

@@ -1,5 +1,5 @@
 // Port of ggoonnzzaallo/2dof_standing controller 0.9, commit 3a9cb54.
-// XIAO nRF54L15 Sense or nRF54LM20A Sense + SG90s, D0 lower / D1 upper.
+// XIAO nRF54L15 Sense or nRF54LM20A Sense + SG90s; see ServoPins.h.
 #include <Arduino.h>
 #include <string.h>
 #include <stdio.h>
@@ -22,7 +22,7 @@ static_assert(CONTROL_LIMIT_RAD==RecoveryStrategy::limit,"Control and recovery r
 #error "Use XIAO nRF54L15 / Sense or XIAO nRF54LM20A / Sense, lolren core 1.0.23."
 #endif
 #if defined(ARDUINO_NRF54LM20A)
-#define ROBOT_PORT_ID "sg90-lm20a-3"
+#define ROBOT_PORT_ID "sg90-lm20a-4"
 #define ROBOT_BOARD_NAME "SG90-nRF54LM20A"
 #define ROBOT_IMU_AXES "-1,-2,3"
 #else
@@ -79,7 +79,8 @@ void resetPolicy(){
 void stop(){
   bootPending=bootNeutral=false; // A stop/fault cancels startup; never auto-retry.
   for(int i=0;i<2;++i)if(motors[i].attached())motors[i].detach();
-  digitalWrite(PIN_D0,LOW);pinMode(PIN_D0,OUTPUT);digitalWrite(PIN_D1,LOW);pinMode(PIN_D1,OUTPUT);
+  digitalWrite(SG90_LOWER_SERVO_PIN,LOW);pinMode(SG90_LOWER_SERVO_PIN,OUTPUT);
+  digitalWrite(SG90_UPPER_SERVO_PIN,LOW);pinMode(SG90_UPPER_SERVO_PIN,OUTPUT);
   mode=inactivity.locked?INACTIVE:OFF;resetPolicy();
   if(inactivity.locked)lastStopReason=INACTIVE_REASON;
 }
@@ -100,7 +101,7 @@ void status(){
   Serial.print("MODE: ");Serial.println(int(mode));
   Serial.print("IMU_READY: ");Serial.println(imu.ready?1:0);
   Serial.print("FILTER_READY: ");Serial.println(attitude.ready?1:0);
-  Serial.println("SERVO_PINS: lower=D0, upper=D1; IMU axes=" ROBOT_IMU_AXES ".");
+  Serial.println("SERVO_PINS: lower=D0, upper=" SG90_UPPER_SERVO_NAME "; IMU axes=" ROBOT_IMU_AXES ".");
   Serial.println("RANGE: +/-90 deg targets, SG90 PWM 500..2500 us, centers=1500,1464; no shaft feedback.");
   Serial.print("PROFILE: 50 Hz, action increment rad: ");Serial.println(POLICY_ACTION_INCREMENT_RAD);
   Serial.print("VARIED_RETRIES: ");Serial.println(POLICY_RETRIES?1:0);
@@ -131,7 +132,7 @@ void arm(){
   if(!fresh()){Serial.println("REFUSED: IMU/filter is not fresh and ready.");return;}
   if(!validStartBattery()){Serial.println("REFUSED: battery start guard, 3700..4400 mV.");return;}
   for(int i=0;i<2;++i){
-    if(motors[i].attach(i==0?PIN_D0:PIN_D1,500,2500)==INVALID_SERVO){halt("PWM attach failed.");return;}
+    if(motors[i].attach(i==0?SG90_LOWER_SERVO_PIN:SG90_UPPER_SERVO_PIN,500,2500)==INVALID_SERVO){halt("PWM attach failed.");return;}
     if(!controlPulse(0.f,pulses[i],uint8_t(i))){halt("invalid neutral calibration.");return;}
     motors[i].writeMicroseconds(pulses[i]);
   }
@@ -273,7 +274,7 @@ void reportSensors(){
     Serial.write(reinterpret_cast<const uint8_t*>(row),size_t(n));
 }
 void reportConfig(){
-  const char* row="CONFIG port=" ROBOT_PORT_ID " actor=c06e4797 pins=0,1 axes=" ROBOT_IMU_AXES " center_us=1500,1464 range_us=500,2500 fall_deg=15 cancel_deg=8 still_ms=300 cpu_mhz=" ROBOT_CPU_MHZ " auto_usb=" ROBOT_AUTO_USB " inactivity_stop=0 pwm=scheduled\n";
+  const char* row="CONFIG port=" ROBOT_PORT_ID " actor=c06e4797 pins=" SG90_SERVO_PINS_CSV " axes=" ROBOT_IMU_AXES " center_us=1500,1464 range_us=500,2500 fall_deg=15 cancel_deg=8 still_ms=300 cpu_mhz=" ROBOT_CPU_MHZ " auto_usb=" ROBOT_AUTO_USB " inactivity_stop=0 pwm=scheduled\n";
   size_t n=strlen(row);if(Serial.availableForWrite()>=int(n))Serial.write(reinterpret_cast<const uint8_t*>(row),n);
 }
 void reportGate(){

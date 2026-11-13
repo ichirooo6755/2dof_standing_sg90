@@ -9,13 +9,13 @@ ROOT = Path(__file__).resolve().parents[1]
 ARDUINO = r'''
 #pragma once
 #include <cstdint>
-constexpr uint8_t PIN_D0=0, PIN_D1=1;
+constexpr uint8_t PIN_D0=0, PIN_D1=1, PIN_D2=2;
 constexpr int LOW=0, HIGH=1, OUTPUT=1;
 constexpr uint32_t GPIO_PIN_CNF_INPUT_Msk=2;
 struct GPIO { uint32_t PIN_CNF[32]; };
 inline GPIO gpio{};
 inline GPIO* NRF_P1=&gpio;
-inline bool levels[2]={};
+inline bool levels[3]={};
 inline uint32_t tick=0;
 inline uint32_t micros(){ return ++tick; }
 inline void digitalWrite(uint8_t pin,int value){ levels[pin]=(value==HIGH); }
@@ -24,11 +24,11 @@ inline void pinMode(uint8_t,int){}
 inline bool pinToPortPin(uint8_t pin,uint8_t* port,uint8_t* bit){
   *port=1;
 #if defined(ARDUINO_NRF54LM20A)
-  *bit=pin==PIN_D0?0:31;
+  *bit=pin==PIN_D0?0:(pin==PIN_D1?31:30);
 #else
   *bit=pin==PIN_D0?4:5;
 #endif
-  return pin==PIN_D0||pin==PIN_D1;
+  return pin==PIN_D0||pin==PIN_D1||pin==PIN_D2;
 }
 '''
 
@@ -61,14 +61,18 @@ int main(){
   assert(startup.retryImu(2100,false));
 
   for(auto& p:gpio.PIN_CNF)p=0xff;
-  FineServo lower,upper;
-  assert(lower.attach(PIN_D0,500,2500)!=INVALID_SERVO);
-  assert(upper.attach(PIN_D1,500,2500)!=INVALID_SERVO);
+  FineServo lower,upper,unused;
+  assert(lower.attach(SG90_LOWER_SERVO_PIN,500,2500)!=INVALID_SERVO);
+  assert(upper.attach(SG90_UPPER_SERVO_PIN,500,2500)!=INVALID_SERVO);
 #if defined(ARDUINO_NRF54LM20A)
-  constexpr int p0=0,p1=31;
-  assert(gpio.PIN_CNF[4]==0xff && gpio.PIN_CNF[5]==0xff);
+  constexpr int p0=0,p1=30;
+  assert(SG90_UPPER_SERVO_PIN==PIN_D2);
+  assert(unused.attach(PIN_D1,500,2500)==INVALID_SERVO);
+  assert(gpio.PIN_CNF[4]==0xff && gpio.PIN_CNF[5]==0xff && gpio.PIN_CNF[31]==0xff);
 #else
   constexpr int p0=4,p1=5;
+  assert(SG90_UPPER_SERVO_PIN==PIN_D1);
+  assert(unused.attach(PIN_D2,500,2500)==INVALID_SERVO);
   assert(gpio.PIN_CNF[0]==0xff && gpio.PIN_CNF[31]==0xff);
 #endif
   assert(gpio.PIN_CNF[p0]==(0xff & ~GPIO_PIN_CNF_INPUT_Msk));

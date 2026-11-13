@@ -1,18 +1,20 @@
-// XIAO nRF54L15 or nRF54LM20A / SG90 commissioning. Software PWM reuses the isolation
-// sketch's verified D0/D1 output method. Every boot starts with PWM off.
-// c = center both, 1/2 = test D0/D1 by +15 and -15 degrees, ! = off.
+// XIAO nRF54L15 or nRF54LM20A / SG90 commissioning. Every boot starts with PWM off.
+// c = center both, 1/2 = test lower/upper by +15 and -15 degrees, ! = off.
 // + / - trims upper center by 6 us toward positive / negative angle.
 #include <Arduino.h>
 
 #if defined(ARDUINO_NRF54LM20A)
 static const char* boardName = "XIAO_nRF54LM20A";
+static const char* upperPinName = "D2";
+static const uint8_t servoPins[2] = {PIN_D0, PIN_D2};
 #elif defined(ARDUINO_XIAO_NRF54L15_CLEAN)
 static const char* boardName = "XIAO_nRF54L15";
+static const char* upperPinName = "D1";
+static const uint8_t servoPins[2] = {PIN_D0, PIN_D1};
 #else
 #error "Select the XIAO nRF54L15 or XIAO nRF54LM20A board in nrf54l15clean."
 #endif
 
-static const uint8_t servoPins[2] = {PIN_D0, PIN_D1};
 // 2026-11-11 operator confirmed both links straight at these commands.
 static int centerUs[2] = {1500, 1464};
 static const int testAmplitudeUs = 167;
@@ -27,7 +29,8 @@ static uint32_t reportAtMs = 0;
 
 static void reportVersion() {
   Serial.print("SERVO_CENTER_2 board="); Serial.print(boardName);
-  Serial.println(" lower=D0 upper=D1 center_us=1500,1464 boot=OFF");
+  Serial.print(" lower=D0 upper="); Serial.print(upperPinName);
+  Serial.println(" center_us=1500,1464 boot=OFF");
 }
 
 static void stopOutputs() {
@@ -74,7 +77,7 @@ void loop() {
     } else if (command == 'c') {
       centerOutputs();
       Serial.print("CENTER D0="); Serial.print(centerUs[0]);
-      Serial.print(" D1="); Serial.print(centerUs[1]);
+      Serial.print(' '); Serial.print(upperPinName); Serial.print('='); Serial.print(centerUs[1]);
       Serial.println(" continuous_hold");
     } else if (command == '+' || command == '-') {
       int candidate = centerUs[1] + (command == '+' ? -6 : 6);
@@ -85,7 +88,7 @@ void loop() {
       centerOutputs();
       testing = command - '1';
       testStartedMs = millis();
-      Serial.print("TEST D"); Serial.print(testing);
+      Serial.print("TEST "); Serial.print(testing == 0 ? "D0" : upperPinName);
       Serial.println(" +15,center,-15,center x3 then continuous center");
     } else if (command == 'v') {
       reportVersion();

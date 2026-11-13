@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <stdint.h>
+#include "ServoPins.h"
 constexpr uint8_t INVALID_SERVO=255;
 
 // Share the foreground pulse generation used by the commissioning sketch.
@@ -9,10 +10,10 @@ class FineServo {
  public:
   bool attached()const{return active_;}
   uint8_t attach(uint8_t pin,int minimum,int maximum){
-    if(pin!=PIN_D0&&pin!=PIN_D1)return INVALID_SERVO;
-    const uint8_t axis=pin==PIN_D0?0:1;
+    if(pin!=SG90_LOWER_SERVO_PIN&&pin!=SG90_UPPER_SERVO_PIN)return INVALID_SERVO;
+    const uint8_t axis=pin==SG90_LOWER_SERVO_PIN?0:1;
     if(channels_[axis]&&channels_[axis]!=this)return INVALID_SERVO;
-    // L15 D0/D1 are P1.04/P1.05; LM20A D0/D1 are P1.00/P1.31.
+    // L15 D0/D1 are P1.04/P1.05; LM20A D0/D2 are P1.00/P1.30.
     // Resolve the selected board's actual pad before enabling input readback.
     uint8_t port=0,bit=0;
     if(!pinToPortPin(pin,&port,&bit)||port!=1||bit>=32)return INVALID_SERVO;
@@ -30,7 +31,7 @@ class FineServo {
   }
   void detach(){
     if(!active_)return;
-    channels_[pin_==PIN_D0?0:1]=nullptr;
+    channels_[pin_==SG90_LOWER_SERVO_PIN?0:1]=nullptr;
     digitalWrite(pin_,LOW);pinMode(pin_,OUTPUT);active_=false;
     if(!channels_[0]&&!channels_[1])haveFrame_=false;
   }
